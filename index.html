@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuickCourt — Book Local Sports Courts</title>
+  <style>
+    :root{
+      --bg:#0f172a;          /* slate-900 */
+      --card:#111827;        /* gray-900 */
+      --muted:#94a3b8;       /* slate-400 */
+      --text:#e5e7eb;        /* gray-200 */
+      --brand:#22c55e;       /* green-500 */
+      --brand-600:#16a34a;   /* green-600 */
+      --danger:#ef4444;      /* red-500 */
+      --warning:#f59e0b;     /* amber-500 */
+      --ok:#60a5fa;          /* blue-400 */
+      --ring: 0 0 0 .15rem rgba(34,197,94,.45);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:linear-gradient(180deg,#0b1220,#0f172a 20%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.7);backdrop-filter:saturate(150%) blur(8px);border-bottom:1px solid rgba(148,163,184,.15)}
+    .nav{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 24px}
+    .logo{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
+    .logo-badge{width:36px;height:36px;border-radius:12px;background:conic-gradient(from 180deg at 50% 50%, #34d399, #60a5fa, #a78bfa, #f472b6,#34d399);box-shadow:0 6px 22px rgba(52,211,153,.35)}
+    .navlinks{display:flex;gap:12px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer;transition:.2s transform, .2s box-shadow}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--brand);color:#052e16;box-shadow:0 10px 24px rgba(34,197,94,.3)}
+    .btn-primary:hover{background:var(--brand-600)}
+    .btn-ghost{background:transparent;border:1px solid rgba(148,163,184,.25);color:var(--text)}
+    .btn-ghost:hover{border-color:rgba(148,163,184,.5)}
+    .chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.25);color:var(--muted);gap:8px}
+    .grid{display:grid;gap:16px}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    @media (max-width: 980px){.grid-3{grid-template-columns:1fr 1fr}}
+    @media (max-width: 720px){.grid-3,.grid-2{grid-template-columns:1fr}}
+
+    .card{background:linear-gradient(180deg,rgba(17,24,39,.8),rgba(17,24,39,.6));border:1px solid rgba(148,163,184,.12);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card-header{padding:16px 18px;border-bottom:1px solid rgba(148,163,184,.12);display:flex;align-items:center;justify-content:space-between}
+    .card-body{padding:16px 18px}
+
+    .hero{padding:48px 24px 24px}
+    .hero-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+    @media (max-width: 980px){.hero-inner{grid-template-columns:1fr}}
+    .hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:0 0 8px;font-weight:900}
+    .subtitle{color:var(--muted)}
+    .searchbar{display:flex;gap:10px;margin-top:16px}
+    .input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0b1220;color:var(--text)}
+    .input:focus{outline:none;box-shadow:var(--ring);border-color:transparent}
+    .pill{display:inline-flex;gap:8px;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid rgba(148,163,184,.2);color:var(--muted)}
+
+    .venue-img{height:140px;background:linear-gradient(135deg,#1f2937,#0b1220);display:flex;align-items:end;justify-content:end;padding:8px}
+    .rating{background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.35);padding:4px 8px;border-radius:999px;font-size:12px}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}}
+
+    .filters .row{display:flex;gap:8px;flex-wrap:wrap}
+    .divider{height:1px;background:rgba(148,163,184,.15);margin:10px 0}
+
+    .tag{display:inline-flex;align-items:center;border:1px dashed rgba(148,163,184,.35);padding:6px 10px;border-radius:999px;color:var(--muted);gap:6px}
+
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    @media (max-width: 980px){.kpis{grid-template-columns:repeat(2,1fr)}}
+    .kpi{padding:14px;border-radius:14px;background:#0b1220;border:1px solid rgba(148,163,184,.18)}
+    .kpi .val{font-size:22px;font-weight:800}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:60}
+    .modal.open{display:flex}
+    .sheet{width:min(920px,96vw);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#0b1220,#0f172a);border:1px solid rgba(148,163,184,.18);border-radius:16px;box-shadow:var(--shadow)}
+    .sheet-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid rgba(148,163,184,.15)}
+    .sheet-body{padding:16px 18px}
+
+    .gallery{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px}
+    .gallery div{background:linear-gradient(135deg,#1f2937,#0b1220);height:140px;border-radius:12px}
+    @media (max-width:720px){.gallery{grid-template-columns:1fr 1fr}}
+
+    .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    @media (max-width:720px){.slots{grid-template-columns:repeat(2,1fr)}}
+    .slot{padding:10px;border-radius:10px;border:1px solid rgba(148,163,184,.25);background:#0b1220;text-align:center;cursor:pointer}
+    .slot.disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+    .slot.active{outline:2px solid var(--brand);background:linear-gradient(180deg,#052e16,#0b1220)}
+
+    .table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    .table th{color:var(--muted);font-weight:600;text-align:left;font-size:13px}
+    .rowc{background:#0b1220;border:1px solid rgba(148,163,184,.18);border-radius:12px}
+    .rowc td{padding:12px}
+    .status{padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid}
+    .status.confirmed{color:#10b981;border-color:#10b98133;background:#10b98112}
+    .status.cancelled{color:#ef4444;border-color:#ef444433;background:#ef444412}
+    .status.completed{color:#60a5fa;border-color:#60a5fa33;background:#60a5fa12}
+
+    footer{padding:24px;color:var(--muted);text-align:center;border-top:1px solid rgba(148,163,184,.15)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo"><span class="logo-badge"></span><span>QuickCourt</span></div>
+      <nav class="navlinks">
+        <a href="#home" class="pill">Home</a>
+        <a href="#venues" class="pill">Venues</a>
+        <a href="#bookings" class="pill">My Bookings</a>
+        <a href="#profile" class="pill">Profile</a>
+        <button id="btnLogin" class="btn btn-ghost">Login</button>
+        <button id="btnSignup" class="btn btn-primary">Sign Up</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO / HOME -->
+  <section id="home" class="hero container">
+    <div class="hero-inner">
+      <div>
+        <h1>Find. Book. Play. 🎾</h1>
+        <p class="subtitle">Reserve badminton courts, football turf, or a table tennis table near you. Join public matches or create your own — all in a few taps.</p>
+        <div class="searchbar">
+          <input id="homeSearch" class="input" placeholder="Search by venue, area or sport…" />
+          <button id="homeSearchBtn" class="btn btn-primary">Search</button>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <span class="chip">Popular: Badminton</span>
+          <span class="chip">Football Turf</span>
+          <span class="chip">Table Tennis</span>
+          <span class="chip">Tennis</span>
+        </div>
+        <div class="kpis" style="margin-top:18px">
+          <div class="kpi"><div class="val" id="kpiBookings">0</div><div class="subtitle">Total Bookings</div></div>
+          <div class="kpi"><div class="val" id="kpiVenues">0</div><div class="subtitle">Venues</div></div>
+          <div class="kpi"><div class="val" id="kpiSports">0</div><div class="subtitle">Sports Supported</div></div>
+          <div class="kpi"><div class="val" id="kpiUsers">0</div><div class="subtitle">Players</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><strong>Popular Venues</strong><button class="btn btn-ghost" id="refreshPopular">↻</button></div>
+        <div class="card-body">
+          <div id="popularList" class="grid grid-2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENUES -->
+  <section id="venues" class="container" style="padding-top:8px">
+    <div class="layout">
+      <aside class="card filters">
+        <div class="card-header"><strong>Filters</strong><button id="clearFilters" class="btn btn-ghost">Clear</button></div>
+        <div class="card-body">
+          <label>Search</label>
+          <input id="venueSearch" class="input" placeholder="Name, area…" />
+          <div class="divider"></div>
+          <label>Sport</label>
+          <div class="row" id="sportFilters"></div>
+          <div class="divider"></div>
+          <label>Max Price (₹/hr)</label>
+          <input id="priceFilter" class="input" type="number" min="0" step="50" placeholder="e.g., 800" />
+          <div class="divider"></div>
+          <label>Rating</label>
+          <div class="row" id="ratingFilters"></div>
+        </div>
+      </aside>
+      <main>
+        <div class="card">
+          <div class="card-header"><strong>All Venues</strong><span class="subtitle" id="venueCount"></span></div>
+          <div class="card-body">
+            <div id="venueList" class="grid grid-3"></div>
+            <div style="display:flex;justify-content:center;gap:10px;margin-top:14px">
+              <button class="btn btn-ghost" id="prevPage">Prev</button>
+              <span class="pill" id="pageInfo">Page 1/1</span>
+              <button class="btn btn-ghost" id="nextPage">Next</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- BOOKINGS -->
+  <section id="bookings" class="container" style="padding-top:8px">
+    <div class="card">
+      <div class="card-header"><strong>My Bookings</strong><span class="subtitle">Manage upcoming and past reservations</span></div>
+      <div class="card-body">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <input id="bookingFilterDate" class="input" type="date" />
+          <select id="bookingFilterStatus" class="input" style="max-width:220px">
+            <option value="">All statuses</option>
+            <option>Confirmed</option>
+            <option>Cancelled</option>
+            <option>Completed</option>
+          </select>
+          <button id="bookingFiltersClear" class="btn btn-ghost">Reset</button>
+        </div>
+        <table class="table" id="bookingTable">
+          <thead>
+            <tr>
+              <th>Venue</th><th>Sport / Court</th><th>Date</th><th>Time</th><th>Total</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profile" class="container" style="padding-top:8px">
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-header"><strong>Profile</strong></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center">
+            <div id="avatar" style="width:96px;height:96px;border-radius:16px;background:linear-gradient(135deg,#1f2937,#0b1220);display:flex;align-items:center;justify-content:center;font-size:28px">🙂</div>
+            <div style="display:grid;gap:8px">
+              <input id="nameInput" class="input" placeholder="Full name" />
+              <input id="emailInput" class="input" placeholder="Email" type="email" />
+              <div style="display:flex;gap:10px">
+                <button id="saveProfile" class="btn btn-primary">Save</button>
+                <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><strong>Booking Preferences</strong></div>
+        <div class="card-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="tag"><input type="checkbox" id="prefBadminton"> Badminton</span>
+            <span class="tag"><input type="checkbox" id="prefFootball"> Football</span>
+            <span class="tag"><input type="checkbox" id="prefTT"> Table Tennis</span>
+            <span class="tag"><input type="checkbox" id="prefTennis"> Tennis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built as a front‑end demo for QuickCourt (User Role). Data is mocked and stored in your browser.
+  </footer>
+
+  <!-- VENUE DETAIL / BOOKING MODAL -->
+  <div class="modal" id="venueModal">
+    <div class="sheet">
+      <div class="sheet-header"><strong id="vmName">Venue</strong><button class="btn btn-ghost" onclick="closeVenueModal()">✕</button></div>
+      <div class="sheet-body">
+        <div class="gallery" id="vmGallery"></div>
+        <div style="display:grid;grid-template-columns:1.6fr .4fr;gap:16px;margin-top:14px">
+          <div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px" id="vmChips"></div>
+            <p id="vmDesc" class="subtitle"></p>
+            <h4>Amenities</h4>
+            <div id="vmAmenities" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+            <h4>About</h4>
+            <p id="vmAbout" class="subtitle"></p>
+            <h4>Reviews</h4>
+            <div id="vmReviews" class="grid"></div>
+          </div>
+          <aside class="card">
+            <div class="card-header"><strong>Book a Court</strong></div>
+            <div class="card-body">
+              <label>Sport</label>
+              <select id="bkSport" class="input"></select>
+              <div class="divider"></div>
+              <label>Court</label>
+              <select id="bkCourt" class="input"></select>
+              <div class="divider"></div>
+              <label>Date</label>
+              <input id="bkDate" type="date" class="input" />
+              <div class="divider"></div>
+              <label>Available Slots</label>
+              <div id="bkSlots" class="slots"></div>
+              <div class="divider"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div class="subtitle">Total</div>
+                <div><strong id="bkTotal">₹0</strong>/hr</div>
+              </div>
+              <button id="bkConfirm" class="btn btn-primary" style="width:100%;margin-top:12px">Confirm & Pay</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (Sign Up / Login + OTP) -->
+  <div class="modal" id="authModal">
+    <div class="sheet" style="max-width:560px">
+      <div class="sheet-header"><strong id="authTitle">Create your account</strong><button class="btn btn-ghost" onclick="closeAuth()">✕</button></div>
+      <div class="sheet-body" id="authBody">
+        <div id="signupForm">
+          <input id="suName" class="input" placeholder="Full name" style="margin-bottom:8px"/>
+          <input id="suEmail" class="input" type="email" placeholder="Email" style="margin-bottom:8px"/>
+          <input id="suPass" class="input" type="password" placeholder="Password" style="margin-bottom:8px"/>
+          <button class="btn btn-primary" style="width:100%" onclick="startSignup()">Continue</button>
+          <div class="subtitle" style="margin-top:10px">Already have an account? <a href="#" onclick="showLogin()">Log in</a></div>
+        </div>
+        <div id="otpForm" style="display:none">
+          <div class="subtitle">We sent an OTP to your email (simulated). Enter it below:</div>
+          <input id="otpInput" class="input" placeholder="4-digit code" maxlength="4" style="margin:10px 0" />
+          <button class="btn btn-primary" style="width:100%" onclick="verifyOTP()">Verify</button>
+          <div class="subtitle" style="margin-top:10px"><a href="#" onclick="backToSignup()">← Back</a></div>
+        </div>
+        <div id="loginForm" style="display:none">
+          <input id="liEmail" class="input" type="email" placeholder="Email" style="margin-bottom:8px"/>
+          <input id="liPass" class="input" type="password" placeholder="Password" style="margin-bottom:8px"/>
+          <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Log in</button>
+          <div class="subtitle" style="margin-top:10px">New here? <a href="#" onclick="showSignup()">Create an account</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ----------------------------- MOCK DATA -------------------------------- */
+    const SPORTS = ["Badminton","Football","Table Tennis","Tennis"]; // popular sports
+    const AMENITIES = ["Parking","Drinking Water","Shower","Locker","Cafeteria","First Aid"];
+
+    const VENUES = [
+      { id:"v1", name:"SmashHub Arena", area:"HSR, Bengaluru", rating:4.6, desc:"Premium indoor badminton facility with shock-absorbent flooring.", about:"Hosts weekend ladders and coaching camps.", images:5, sports:[
+          {sport:"Badminton", courts:[{name:"Court A", price:450, hours:[6,22]}, {name:"Court B", price:400, hours:[6,22]}]},
+        ], amenities:["Parking","Drinking Water","First Aid"] },
+      { id:"v2", name:"Turf Titans", area:"Powai, Mumbai", rating:4.4, desc:"5-a-side football turf with LED floodlights.", about:"Great for corporate leagues and night matches.", images:4, sports:[
+          {sport:"Football", courts:[{name:"Turf 1", price:1400, hours:[7,23]}]}
+        ], amenities:["Parking","Shower","Cafeteria"] },
+      { id:"v3", name:"TopSpin TT Club", area:"Kondapur, Hyderabad", rating:4.7, desc:"Air-conditioned table tennis studio with Stiga tables.", about:"Open tournaments every month.", images:5, sports:[
+          {sport:"Table Tennis", courts:[{name:"Table 1", price:250, hours:[8,21]},{name:"Table 2", price:250, hours:[8,21]}]}
+        ], amenities:["Parking","Drinking Water"] },
+      { id:"v4", name:"Grand Aces", area:"Aundh, Pune", rating:4.3, desc:"Outdoor tennis courts with clay & hard options.", about:"Coaching available for all ages.", images:4, sports:[
+          {sport:"Tennis", courts:[{name:"Clay 1", price:500, hours:[6,20]},{name:"Hard 1", price:600, hours:[6,22]}]}
+        ], amenities:["Parking","Locker","First Aid"] },
+      { id:"v5", name:"AllPlay Sports Center", area:"Anna Nagar, Chennai", rating:4.5, desc:"Multi-sport center: badminton, TT and tennis.", about:"Group bookings welcome.", images:6, sports:[
+          {sport:"Badminton", courts:[{name:"Court 1", price:350, hours:[6,22]}]},
+          {sport:"Table Tennis", courts:[{name:"Table A", price:220, hours:[8,21]}]},
+          {sport:"Tennis", courts:[{name:"Hard A", price:520, hours:[6,21]}]}
+        ], amenities:["Parking","Drinking Water","Locker"] },
+      { id:"v6", name:"City Sports Dome", area:"Gachibowli, Hyderabad", rating:4.2, desc:"Indoor arena supporting multiple sports.", about:"Discounts on morning slots.", images:5, sports:[
+          {sport:"Badminton", courts:[{name:"Court 3", price:300, hours:[6,22]}]},
+          {sport:"Tennis", courts:[{name:"Hard 2", price:550, hours:[6,22]}]}
+        ], amenities:["Parking","Cafeteria"] }
+    ];
+
+    /* ----------------------------- STATE ------------------------------------ */
+    const state = {
+      user: null,          // {id, name, email}
+      otp: null,           // 4-digit OTP for signup
+      page: 1,
+      perPage: 6,
+      filters: { q:"", sports: new Set(), maxPrice: "", rating: new Set() },
+      booking: { venueId:null, sport:null, court:null, date:null, slot:null, price:0 }
+    };
+
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => document.querySelectorAll(sel);
+
+    function loadFromStorage(){
+      const user = localStorage.getItem('qc_user');
+      state.user = user ? JSON.parse(user) : null;
+      const bookings = localStorage.getItem('qc_bookings');
+      if(!bookings) localStorage.setItem('qc_bookings', JSON.stringify([]));
+      updateAuthUI();
+      refreshKPIs();
+    }
+
+    function updateAuthUI(){
+      $('#btnLogin').style.display = state.user? 'none':'inline-flex';
+      $('#btnSignup').style.display = state.user? 'none':'inline-flex';
+      if(state.user){
+        $('#nameInput').value = state.user.name;
+        $('#emailInput').value = state.user.email;
+        $('#avatar').textContent = state.user.name?.[0]?.toUpperCase()||'🙂';
+      } else {
+        $('#nameInput').value = '';
+        $('#emailInput').value = '';
+        $('#avatar').textContent = '🙂';
+      }
+    }
+
+    function refreshKPIs(){
+      const totalVenues = VENUES.length;
+      const sportsSet = new Set();
+      VENUES.forEach(v => v.sports.forEach(s => sportsSet.add(s.sport)));
+      const bookings = JSON.parse(localStorage.getItem('qc_bookings')||'[]');
+      $('#kpiVenues').textContent = totalVenues;
+      $('#kpiSports').textContent = sportsSet.size;
+      $('#kpiBookings').textContent = bookings.length;
+      const users = JSON.parse(localStorage.getItem('qc_users')||'[]');
+      $('#kpiUsers').textContent = users.length || (state.user?1:0);
+    }
+
+    /* ----------------------------- HOME ------------------------------------- */
+    function renderPopular(){
+      const list = $('#popularList');
+      list.innerHTML = '';
+      const shuffled = [...VENUES].sort(()=> Math.random()-0.5).slice(0,4);
+      for(const v of shuffled){
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="venue-img"><span class="rating">★ ${v.rating}</span></div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div>
+                <div style="font-weight:700">${v.name}</div>
+                <div class="subtitle">${v.area}</div>
+              </div>
+              <button class="btn btn-primary">View</button>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              ${v.sports.map(s=>`<span class="pill">${s.sport}</span>`).join('')}
+            </div>
+          </div>`;
+        card.querySelector('button').onclick = ()=> openVenue(v.id);
+        list.appendChild(card);
+      }
+    }
+
+    $('#refreshPopular').onclick = renderPopular;
+    $('#homeSearchBtn').onclick = ()=>{
+      $('#venueSearch').value = $('#homeSearch').value;
+      state.filters.q = $('#homeSearch').value.trim().toLowerCase();
+      state.page = 1; renderVenues();
+      location.hash = '#venues';
+    };
+
+    /* ----------------------------- VENUES ----------------------------------- */
+    function setupFilters(){
+      // Sport chips
+      const sWrap = $('#sportFilters'); sWrap.innerHTML = '';
+      const sports = new Set();
+      VENUES.forEach(v=> v.sports.forEach(s=>sports.add(s.sport)));
+      ;[...sports].forEach(sp=>{
+        const el = document.createElement('button');
+        el.className = 'btn btn-ghost';
+        el.textContent = sp;
+        el.onclick = ()=>{ toggleSet(state.filters.sports, sp); state.page=1; renderVenues(); el.classList.toggle('btn-primary'); };
+        sWrap.appendChild(el);
+      });
+      // Rating
+      const rWrap = $('#ratingFilters'); rWrap.innerHTML = '';
+      [4.5,4.0,3.5].forEach(r=>{
+        const el = document.createElement('button');
+        el.className = 'btn btn-ghost';
+        el.textContent = `≥ ${r}`;
+        el.onclick = ()=>{ toggleSet(state.filters.rating, r); state.page=1; renderVenues(); el.classList.toggle('btn-primary'); };
+        rWrap.appendChild(el);
+      });
+      // Text + price
+      $('#venueSearch').oninput = (e)=>{ state.filters.q = e.target.value.trim().toLowerCase(); state.page=1; renderVenues(); };
+      $('#priceFilter').oninput = (e)=>{ state.filters.maxPrice = e.target.value; state.page=1; renderVenues(); };
+      $('#clearFilters').onclick = ()=>{ state.filters={ q:"", sports:new Set(), maxPrice:"", rating:new Set() }; $('#venueSearch').value=''; $('#priceFilter').value=''; setupFilters(); renderVenues(); };
+      $('#prevPage').onclick = ()=>{ if(state.page>1){state.page--; renderVenues();} };
+      $('#nextPage').onclick = ()=>{ const total = filteredVenues().length; const max = Math.max(1, Math.ceil(total/state.perPage)); if(state.page<max){state.page++; renderVenues();} };
+    }
+
+    function toggleSet(set, val){ set.has(val)? set.delete(val): set.add(val); }
+
+    function filteredVenues(){
+      return VENUES.filter(v=>{
+        const text = (v.name+" "+v.area+" "+v.desc).toLowerCase();
+        const qok = !state.filters.q || text.includes(state.filters.q);
+        const sok = state.filters.sports.size===0 || v.sports.some(s=> state.filters.sports.has(s.sport));
+        const rok = state.filters.rating.size===0 || [...state.filters.rating].some(r=> v.rating>=r);
+        const pok = !state.filters.maxPrice || v.sports.some(s=> s.courts.some(c=> c.price <= +state.filters.maxPrice));
+        return qok && sok && rok && pok;
+      });
+    }
+
+    function renderVenues(){
+      const list = $('#venueList'); list.innerHTML='';
+      const arr = filteredVenues();
+      const total = arr.length; const max = Math.max(1, Math.ceil(total/state.perPage));
+      $('#pageInfo').textContent = `Page ${state.page}/${max}`;
+      $('#venueCount').textContent = `${total} results`;
+      const start = (state.page-1)*state.perPage;
+      const pageItems = arr.slice(start, start+state.perPage);
+      for(const v of pageItems){
+        const minPrice = Math.min(...v.sports.flatMap(s=> s.courts.map(c=>c.price)));
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="venue-img"><span class="rating">★ ${v.rating}</span></div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div>
+                <div style="font-weight:800">${v.name}</div>
+                <div class="subtitle">${v.area}</div>
+              </div>
+              <div style="text-align:right">
+                <div class="subtitle">Starting</div>
+                <div><strong>₹${minPrice}</strong>/hr</div>
+              </div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              ${v.sports.map(s=>`<span class="pill">${s.sport}</span>`).join('')}
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn btn-primary">View</button></div>
+          </div>`;
+        card.querySelector('button').onclick = ()=> openVenue(v.id);
+        list.appendChild(card);
+      }
+    }
+
+    /* --------------------------- VENUE DETAIL ------------------------------- */
+    function openVenue(id){
+      const v = VENUES.find(x=>x.id===id); if(!v) return;
+      state.booking = { venueId:v.id, sport:null, court:null, date:todayStr(), slot:null, price:0 };
+      $('#vmName').textContent = `${v.name} · ${v.area}`;
+      const g = $('#vmGallery'); g.innerHTML='';
+      for(let i=0;i<v.images;i++){ const d = document.createElement('div'); d.style.height='120px'; d.style.background=`linear-gradient(135deg,#1f2937 ${20+i*5}%,#0b1220)`; d.style.borderRadius='12px'; g.appendChild(d); }
+      const chips = $('#vmChips'); chips.innerHTML = `<span class='pill'>★ ${v.rating}</span>` + v.sports.map(s=>`<span class='pill'>${s.sport}</span>`).join('');
+      $('#vmDesc').textContent = v.desc; $('#vmAbout').textContent = v.about;
+      const am = $('#vmAmenities'); am.innerHTML=''; v.amenities.forEach(a=>{ const el=document.createElement('span'); el.className='tag'; el.textContent=a; am.appendChild(el); });
+      const rev = $('#vmReviews'); rev.innerHTML = '';
+      for(let i=0;i<3;i++){ const r = document.createElement('div'); r.className='card'; r.innerHTML=`<div class='card-body'><strong>Player ${i+1}</strong><div class='subtitle'>"Great experience!" · ★ ${v.rating - (i?0.2:0)}</div></div>`; rev.appendChild(r); }
+      // Booking form
+      const sportSel = $('#bkSport'); sportSel.innerHTML = v.sports.map(s=>`<option>${s.sport}</option>`).join('');
+      sportSel.onchange = ()=> populateCourts();
+      const courtSel = $('#bkCourt'); courtSel.onchange = ()=> { state.booking.court = courtSel.value; refreshSlots(); updateTotal(); };
+      $('#bkDate').value = todayStr();
+      $('#bkDate').onchange = ()=>{ state.booking.date = $('#bkDate').value; refreshSlots(); };
+      populateCourts();
+      refreshSlots();
+      updateTotal();
+      $('#bkConfirm').onclick = confirmBooking;
+      $('#venueModal').classList.add('open');
+    }
+
+    function closeVenueModal(){ $('#venueModal').classList.remove('open'); }
+
+    function todayStr(){ const d = new Date(); const tzOffset = d.getTimezoneOffset(); // just use local
+      return new Date(Date.now()-tzOffset*60000).toISOString().slice(0,10); }
+
+    function currentVenue(){ return VENUES.find(v=> v.id===state.booking.venueId); }
+
+    function populateCourts(){
+      const v = currentVenue(); const sport = $('#bkSport').value; state.booking.sport = sport;
+      const courts = v.sports.find(s=> s.sport===sport).courts;
+      const courtSel = $('#bkCourt'); courtSel.innerHTML = courts.map(c=>`<option>${c.name}</option>`).join('');
+      state.booking.court = courts[0].name; state.booking.price = courts[0].price;
+      refreshSlots(); updateTotal();
+    }
+
+    function refreshSlots(){
+      const v = currentVenue(); if(!v) return; const sport = $('#bkSport').value; const courts = v.sports.find(s=> s.sport===sport).courts;
+      const court = courts.find(c=> c.name===state.booking.court) || courts[0];
+      state.booking.price = court.price;
+      const [open, close] = court.hours; // integers hours
+      const slots = []; for(let h=open; h<close; h++){ const s=`${String(h).padStart(2,'0')}:00 - ${String(h+1).padStart(2,'0')}:00`; slots.push(s); }
+      const booked = getBookings().filter(b=> b.venueId===v.id && b.court===court.name && b.date===($('#bkDate').value||todayStr()) ).map(b=>b.slot);
+      const wrap = $('#bkSlots'); wrap.innerHTML='';
+      slots.forEach(s=>{
+        const el = document.createElement('div'); el.className='slot'; el.textContent=s;
+        const isPast = isPastSlot($('#bkDate').value, s);
+        if(booked.includes(s) || isPast){ el.classList.add('disabled'); }
+        el.onclick = ()=>{ if(el.classList.contains('disabled')) return; $$('.slot').forEach(x=>x.classList.remove('active')); el.classList.add('active'); state.booking.slot = s; };
+        wrap.appendChild(el);
+      });
+    }
+
+    function isPastSlot(dateStr, slot){
+      // slot like "09:00 - 10:00"
+      const [h] = slot.split(':');
+      const dt = new Date(dateStr+"T"+h.padStart(2,'0')+":00:00");
+      return dt < new Date();
+    }
+
+    function updateTotal(){ $('#bkTotal').textContent = `₹${state.booking.price}`; }
+
+    function getBookings(){ return JSON.parse(localStorage.getItem('qc_bookings')||'[]'); }
+    function setBookings(arr){ localStorage.setItem('qc_bookings', JSON.stringify(arr)); refreshKPIs(); renderBookings(); }
+
+    function confirmBooking(){
+      if(!state.user){ openAuth('signup'); return; }
+      const {venueId,sport,court,date,slot,price} = state.booking;
+      if(!(venueId && sport && court && date && slot)){
+        alert('Please choose sport, court, date and a time slot.'); return;
+      }
+      const b = { id: 'b'+Math.random().toString(36).slice(2,8), venueId, sport, court, date, slot, total: price, status:'Confirmed', userId: state.user.id };
+      const arr = getBookings();
+      // prevent double-booking same slot
+      if(arr.some(x=> x.venueId===venueId && x.court===court && x.date===date && x.slot===slot)){
+        alert('That slot is already booked.'); return;
+      }
+      arr.push(b); setBookings(arr);
+      closeVenueModal();
+      location.hash = '#bookings';
+      alert('Payment simulated ✅ Your booking is confirmed.');
+    }
+
+    /* ----------------------------- BOOKINGS --------------------------------- */
+    function renderBookings(){
+      const tbody = $('#bookingRows'); tbody.innerHTML='';
+      let arr = getBookings();
+      if(state.user) arr = arr.filter(b=> b.userId===state.user.id); // show only user's
+      // filter UI
+      const fDate = $('#bookingFilterDate').value; const fStatus = $('#bookingFilterStatus').value;
+      if(fDate) arr = arr.filter(b=> b.date===fDate);
+      if(fStatus) arr = arr.filter(b=> b.status===fStatus);
+      // mark completed if past
+      arr.forEach(b=>{ const endHour = +b.slot.slice(8,10); const end = new Date(b.date+`T${String(endHour).padStart(2,'0')}:00:00`); if(new Date()>end && b.status==='Confirmed'){ b.status='Completed'; }
+      });
+      localStorage.setItem('qc_bookings', JSON.stringify(getBookings().map(x=> arr.find(y=>y.id===x.id) || x)));
+      for(const b of arr){
+        const v = VENUES.find(x=>x.id===b.venueId);
+        const tr = document.createElement('tr'); tr.className='rowc';
+        tr.innerHTML = `
+          <td>${v?.name||'—'}<div class='subtitle'>${v?.area||''}</div></td>
+          <td>${b.sport} · <span class='subtitle'>${b.court}</span></td>
+          <td>${b.date}</td>
+          <td>${b.slot}</td>
+          <td>₹${b.total}</td>
+          <td><span class='status ${b.status.toLowerCase()}'>${b.status}</span></td>
+          <td>
+            ${b.status==='Confirmed' ? `<button class='btn btn-ghost' data-id='${b.id}'>Cancel</button>` : ''}
+          </td>`;
+        tbody.appendChild(tr);
+      }
+      // attach cancel handlers
+      tbody.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.onclick = ()=>{
+          const id = btn.getAttribute('data-id');
+          const all = getBookings(); const idx = all.findIndex(x=>x.id===id);
+          if(idx>-1){ all[idx].status='Cancelled'; setBookings(all); }
+        };
+      });
+    }
+    $('#bookingFilterDate').onchange = renderBookings; $('#bookingFilterStatus').onchange = renderBookings;
+
+    /* ----------------------------- AUTH ------------------------------------- */
+    function openAuth(mode='signup'){
+      $('#authModal').classList.add('open');
+      if(mode==='login') showLogin(); else showSignup();
+    }
+    function closeAuth(){ $('#authModal').classList.remove('open'); }
+
+    function showSignup(){ $('#authTitle').textContent='Create your account'; $('#signupForm').style.display='block'; $('#otpForm').style.display='none'; $('#loginForm').style.display='none'; }
+    function backToSignup(){ showSignup(); }
+    function showLogin(){ $('#authTitle').textContent='Welcome back'; $('#signupForm').style.display='none'; $('#otpForm').style.display='none'; $('#loginForm').style.display='block'; }
+
+    $('#btnSignup').onclick = ()=> openAuth('signup');
+    $('#btnLogin').onclick = ()=> openAuth('login');
+
+    function startSignup(){
+      const name = $('#suName').value.trim(); const email = $('#suEmail').value.trim(); const pass = $('#suPass').value;
+      if(!(name && email && pass)) return alert('Please fill all fields.');
+      // simulate OTP
+      state.otp = String(Math.floor(1000 + Math.random()*9000));
+      localStorage.setItem('qc_signup', JSON.stringify({name,email,pass,otp:state.otp}));
+      alert('Simulated OTP: '+state.otp);
+      $('#signupForm').style.display='none'; $('#otpForm').style.display='block';
+    }
+
+    function verifyOTP(){
+      const code = $('#otpInput').value.trim(); const data = JSON.parse(localStorage.getItem('qc_signup')||'null');
+      if(!data) return;
+      if(code===data.otp){
+        const users = JSON.parse(localStorage.getItem('qc_users')||'[]');
+        const exists = users.find(u=> u.email===data.email);
+        if(!exists){ users.push({id:'u'+Math.random().toString(36).slice(2,8), name:data.name, email:data.email, pass:data.pass}); localStorage.setItem('qc_users', JSON.stringify(users)); }
+        // login
+        state.user = users.find(u=> u.email===data.email);
+        localStorage.setItem('qc_user', JSON.stringify({id:state.user.id,name:state.user.name,email:state.user.email}));
+        updateAuthUI(); refreshKPIs(); closeAuth();
+        alert('Verified! Account created.');
+      } else {
+        alert('Incorrect OTP.');
+      }
+    }
+
+    function doLogin(){
+      const email = $('#liEmail').value.trim(); const pass = $('#liPass').value;
+      const users = JSON.parse(localStorage.getItem('qc_users')||'[]');
+      const u = users.find(x=> x.email===email && x.pass===pass);
+      if(!u) return alert('Invalid credentials.');
+      state.user = {id:u.id,name:u.name,email:u.email};
+      localStorage.setItem('qc_user', JSON.stringify(state.user));
+      updateAuthUI(); refreshKPIs(); closeAuth();
+    }
+
+    $('#saveProfile').onclick = ()=>{
+      if(!state.user) return alert('Please log in.');
+      const name = $('#nameInput').value.trim(); const email = $('#emailInput').value.trim();
+      if(!(name && email)) return;
+      state.user.name = name; state.user.email = email;
+      localStorage.setItem('qc_user', JSON.stringify(state.user));
+      // persist in users list too
+      const users = JSON.parse(localStorage.getItem('qc_users')||'[]');
+      const idx = users.findIndex(u=>u.id===state.user.id); if(idx>-1){ users[idx].name=name; users[idx].email=email; localStorage.setItem('qc_users', JSON.stringify(users)); }
+      updateAuthUI(); alert('Profile updated.');
+    };
+
+    $('#logoutBtn').onclick = ()=>{ state.user=null; localStorage.removeItem('qc_user'); updateAuthUI(); };
+
+    /* ------------------------------- NAV ------------------------------------ */
+    window.addEventListener('hashchange', onRoute);
+    function onRoute(){
+      const target = location.hash || '#home';
+      document.querySelectorAll('section').forEach(sec=> sec.style.display = ("#"+sec.id)===target ? 'block':'none');
+      // refresh per-page
+      if(target==='#venues'){ renderVenues(); }
+      if(target==='#bookings'){ renderBookings(); }
+      if(target==='#home'){ renderPopular(); }
+    }
+
+    /* ------------------------------ INIT ------------------------------------ */
+    setupFilters();
+    renderPopular();
+    renderVenues();
+    renderBookings();
+    loadFromStorage();
+    onRoute(); // set initial visible section
+  </script>
+</body>
+</html>
